@@ -4,11 +4,11 @@ import sbtcrossproject.CrossPlugin.autoImport.crossProject
 import sbtcrossproject.CrossType
 import ReleaseTransformations._
 
-val Scala211 = "2.11.12"
-val NativeCond = s"matrix.scala == '$Scala211'"
+val Scala212 = "2.12.19"
+val NativeCond = s"matrix.scala == '$Scala212'"
 
-ThisBuild / crossScalaVersions := Seq(Scala211, "2.12.15", "2.13.5")
-ThisBuild / scalaVersion := Scala211
+ThisBuild / crossScalaVersions := Seq("2.12.19", "2.13.14")
+ThisBuild / scalaVersion := Scala212
 
 ThisBuild / githubWorkflowPublishTargetBranches := Seq()
 
@@ -28,12 +28,14 @@ ThisBuild / githubWorkflowBuild := Seq(
     name = Some("Run native build"),
     cond = Some(NativeCond)))
 
-val scalatestVersion = "3.2.9"
+ThisBuild / githubWorkflowJavaVersions := Seq(JavaSpec.temurin("11"))
+
+val scalatestVersion = "3.2.19"
 
 lazy val nativeCommonSettings = Def.settings(
-  scalaVersion := Scala211,
-  crossScalaVersions := Seq(Scala211),
-  nativeLinkStubs := true
+  scalaVersion := Scala212,
+  crossScalaVersions := Seq(Scala212),
+  //nativeLinkStubs := true
 )
 
 lazy val commonSettings = Seq(
@@ -56,9 +58,9 @@ lazy val commonSettings = Seq(
   Compile / console / scalacOptions ~= { _ filterNot { o => o == "-Ywarn-unused-import" || o == "-Xfatal-warnings" } },
   Test / console / scalacOptions := (Compile / console / scalacOptions).value,
   resolvers ++= Seq(
-    Resolver.sonatypeRepo("releases"),
-    Resolver.sonatypeRepo("snapshots")
-  ),
+    Resolver.sonatypeOssRepos("releases"),
+    Resolver.sonatypeOssRepos("snapshots")
+  ).flatten,
   libraryDependencies ++= {
     CrossVersion.partialVersion(scalaVersion.value) match {
       case Some((2, v)) if v <= 12 =>
@@ -117,7 +119,7 @@ lazy val commonSettings = Seq(
     commitReleaseVersion,
     tagRelease,
     publishArtifacts,
-    releaseStepCommandAndRemaining(s";++${Scala211}!;coreNative/publish"),
+    releaseStepCommandAndRemaining(s";++${Scala212}!;coreNative/publish"),
     setNextVersion,
     commitNextVersion,
     pushChanges
@@ -129,7 +131,7 @@ lazy val commonSettings = Seq(
 
 lazy val root = project.in(file("."))
   .settings(commonSettings: _*)
-  .settings(crossScalaVersions := Seq(Scala211))
+  .settings(crossScalaVersions := Seq(Scala212))
   .settings(noPublishSettings: _*)
   .aggregate(coreJVM, examplesJVM, coreJS, examplesJS)
 

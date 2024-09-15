@@ -22,42 +22,36 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        scala: [2.11.12, 2.12.15, 2.13.5]
-        java: [adopt@1.8]
+        scala: [2.12.19, 2.13.14]
+        java: [temurin@11]
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout current branch (full)
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Setup Java and Scala
-        uses: olafurpg/setup-scala@v13
+      - name: Setup Java (temurin@11)
+        if: matrix.java == 'temurin@11'
+        uses: actions/setup-java@v4
         with:
-          java-version: ${{ matrix.java }}
+          distribution: temurin
+          java-version: 11
+          cache: sbt
 
-      - name: Cache sbt
-        uses: actions/cache@v2
-        with:
-          path: |
-            ~/.sbt
-            ~/.ivy2/cache
-            ~/.coursier/cache/v1
-            ~/.cache/coursier/v1
-            ~/AppData/Local/Coursier/Cache/v1
-            ~/Library/Caches/Coursier/v1
-          key: ${{ runner.os }}-sbt-cache-v2-${{ hashFiles('**/*.sbt') }}-${{ hashFiles('project/build.properties') }}
+      - name: Setup sbt
+        uses: sbt/setup-sbt@v1
 
       - name: Setup scala native dependencies
-        if: matrix.scala == '2.11.12'
+        if: matrix.scala == '2.12.19'
         run: sudo apt install clang libunwind-dev libgc-dev libre2-dev
 
       - name: Check that workflows are up to date
-        run: sbt ++${{ matrix.scala }} githubWorkflowCheck
+        run: sbt '++ ${{ matrix.scala }}' githubWorkflowCheck
 
       - name: Run main build
-        run: 'sbt ++${{ matrix.scala }} test test:doc mimaReportBinaryIssues'
+        run: 'sbt ''++ ${{ matrix.scala }}'' test test:doc mimaReportBinaryIssues'
 
       - name: Run native build
-        if: matrix.scala == '2.11.12'
-        run: sbt ++${{ matrix.scala }} coreNative/test examplesNative/test
+        if: matrix.scala == '2.12.19'
+        run: sbt '++ ${{ matrix.scala }}' coreNative/test examplesNative/test

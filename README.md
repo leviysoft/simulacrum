@@ -9,13 +9,13 @@ simulacrum
 
 **Note on maintenance** 
 
-This project is only maintained for Scala 2.x. No new features are developed, but bug fix releases will still be made available. For Dotty/Scala 3, please use [simulacrum-scalafix](https://github.com/typelevel/simulacrum-scalafix), which is a set of Scalafix rewrites that mirror simulacrum's features.
+This fork is created to maintain functioning binaries of simulacrum since [Typelevel's repo](https://github.com/typelevel/simulacrum) seems stale
 
 ----
 
 Type classes rock. Alas, their encoding in Scala requires a lot of boilerplate, which doesn't rock. There is inconsistency between projects, where type classes are encoded differently. There is inconsistency within projects, where object-oriented forwarders (aka. ops, syntax) accidentally differ in exact parameter lists or forwarders are missing where they are expected to be. Even in disciplined teams, the bike-shedding opportunities alone are a source of lost productivity.
 
-This project addresses these concerns by introducing first class support for type classes in Scala 2.11. For example:
+This project addresses these concerns by introducing first class support for type classes in Scala 2.12 & 2.13. For example:
 
 ```scala
 import simulacrum._
@@ -150,12 +150,12 @@ Note that the second approach will not include the `map` operation of its grandp
 
 ## Including Simulacrum
 
-This project supports Scala 2.11, 2.12, and 2.13. The project is based on macro paradise. To use the project, add the following to your build.sbt:
+This project supports Scala 2.12, and 2.13. The project is based on macro paradise. To use the project, add the following to your build.sbt:
 
 ```scala
 libraryDependencies += "org.typelevel" %% "simulacrum" % "1.0.1"
 
-// For Scala 2.11-2.12
+// For Scala 2.12
 addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full)
 
 // For Scala 2.13+
