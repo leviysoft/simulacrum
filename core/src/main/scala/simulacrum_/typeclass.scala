@@ -1,4 +1,4 @@
-package simulacrum
+package simulacrum_
 
 import scala.annotation.{ compileTimeOnly, StaticAnnotation }
 import scala.language.experimental.macros
@@ -103,7 +103,7 @@ class TypeClassMacros(val c: Context) {
       val suppress = sourceMethod.mods.annotations.filter { ann =>
         val typed = c.typecheck(ann)
         typed.tpe.typeSymbol.fullName match {
-          case "simulacrum.noop" => true
+          case "simulacrum_.noop" => true
           case _ => false
         }
       }.nonEmpty
@@ -127,7 +127,7 @@ class TypeClassMacros(val c: Context) {
         val overrides = sourceMethod.mods.annotations.flatMap { ann =>
           val typed = c.typecheck(ann)
           typed.tpe.typeSymbol.fullName match {
-            case "simulacrum.op" =>
+            case "simulacrum_.op" =>
               val q"new ${_}(${Literal(Constant(alias: String))}, ..$rest)" = typed
               List(genAlias(alias, rest))
             case _ => Nil
@@ -141,8 +141,8 @@ class TypeClassMacros(val c: Context) {
       val filteredAnnotations = mods.annotations.filter { ann =>
         val typed = c.typecheck(ann)
         typed.tpe.typeSymbol.fullName match {
-          case "simulacrum.op" => false
-          case "simulacrum.noop" => false
+          case "simulacrum_.op" => false
+          case "simulacrum_.noop" => false
           case _ => true
         }
       }
@@ -321,7 +321,7 @@ class TypeClassMacros(val c: Context) {
       val tparamNames = tparams.map { _.name }
       val tcargs = typeClass.mods.annotations.flatMap { ann =>
         val typed = c.typecheck(ann)
-        if (typed.tpe.typeSymbol.fullName == "simulacrum.typeclass") {
+        if (typed.tpe.typeSymbol.fullName == "simulacrum_.typeclass") {
           val q"new ${_}(..${args})" = typed
           List(args)
         } else Nil

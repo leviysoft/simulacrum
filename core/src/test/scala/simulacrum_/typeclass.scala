@@ -1,4 +1,4 @@
-package simulacrum
+package simulacrum_
 
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
@@ -121,7 +121,7 @@ class TypeClassTest extends AnyWordSpec with Matchers {
       "supports aliasing the name of adapted methods (without named arg)" in {
         @typeclass trait Sg[A] {
           @op("|+|", true) def append(x: A, y: A): A
-          @simulacrum.op("~", true) def foo(x: A, y: A): A = append(x, y)
+          @op("~", true) def foo(x: A, y: A): A = append(x, y)
         }
         implicit val sgInt: Sg[Int] = new Sg[Int] {
           def append(x: Int, y: Int) = x + y
@@ -137,7 +137,7 @@ class TypeClassTest extends AnyWordSpec with Matchers {
       "supports suppression of adapter methods" in {
         @typeclass trait Sg[A] {
           @noop def append(x: A, y: A): A
-          @simulacrum.noop def foo(x: A, y: A): A = append(x, y)
+          @noop def foo(x: A, y: A): A = append(x, y)
         }
         implicit val sgInt: Sg[Int] = new Sg[Int] {
           def append(x: Int, y: Int) = x + y

@@ -1,5 +1,4 @@
-package simulacrum
-
+package simulacrum_
 
 // NB: These imports are because the tests are compiled with `-Yno-imports`, to
 //     ensure that simulacrum works in projects that use that flag.

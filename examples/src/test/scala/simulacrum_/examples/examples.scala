@@ -1,7 +1,6 @@
-package simulacrum.examples
+package simulacrum_.examples
 
-import simulacrum._
-
+import simulacrum_._
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
