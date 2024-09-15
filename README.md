@@ -1,8 +1,8 @@
 simulacrum
 ==========
 
-[![Continuous Integration](https://github.com/typelevel/simulacrum/actions/workflows/ci.yml/badge.svg)](https://github.com/typelevel/simulacrum/actions/workflows/ci.yml)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.typelevel/simulacrum_2.13/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.typelevel/simulacrum_2.13)
+[![Continuous Integration](https://github.com/leviysoft/simulacrum/actions/workflows/ci.yml/badge.svg)](https://github.com/leviysoft/simulacrum/actions/workflows/ci.yml)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.github.leviysoft/simulacrum_2.13/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.github.leviysoft/simulacrum_2.13)
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/mpilquist/simulacrum?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 ----
@@ -10,6 +10,8 @@ simulacrum
 **Note on maintenance** 
 
 This fork is created to maintain functioning binaries of simulacrum since [Typelevel's repo](https://github.com/typelevel/simulacrum) seems stale
+
+Package name is changed to `simulacrum_` so that LeviySoft's artifact can be used alongside Typelevel's one
 
 ----
 
@@ -153,7 +155,7 @@ Note that the second approach will not include the `map` operation of its grandp
 This project supports Scala 2.12, and 2.13. The project is based on macro paradise. To use the project, add the following to your build.sbt:
 
 ```scala
-libraryDependencies += "org.typelevel" %% "simulacrum" % "1.0.1"
+libraryDependencies += "io.github.leviysoft" %% "simulacrum" % "1.0.1"
 
 // For Scala 2.12
 addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full)

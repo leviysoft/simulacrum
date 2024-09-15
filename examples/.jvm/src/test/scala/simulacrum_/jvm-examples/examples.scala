@@ -1,8 +1,7 @@
-package simulacrum.jvmexamples
+package simulacrum_.jvmexamples
 
-import simulacrum._
+import simulacrum_._
 import shapeless.test.illTyped
-
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
