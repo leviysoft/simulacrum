@@ -183,5 +183,6 @@ lazy val examplesNative = examples.native
 lazy val noPublishSettings = Seq(
   publish := {},
   publishLocal := {},
-  publishArtifact := false
+  publishArtifact := false,
+  publish / skip := true
 )
