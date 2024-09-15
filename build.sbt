@@ -28,6 +28,8 @@ ThisBuild / githubWorkflowBuild := Seq(
     name = Some("Run native build"),
     cond = Some(NativeCond)))
 
+ThisBuild / githubWorkflowJavaVersions := Seq(JavaSpec.temurin("11"))
+
 val scalatestVersion = "3.2.19"
 
 lazy val nativeCommonSettings = Def.settings(
