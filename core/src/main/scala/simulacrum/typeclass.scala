@@ -357,7 +357,7 @@ class TypeClassMacros(val c: Context) {
         //     TypeDef(Modifiers(PARAM), typeNames.WILDCARD, List(), TypeBoundsTree(Ident(TypeName("Lower")), Ident(TypeName("Upper"))))
         //   ), TypeBoundsTree(EmptyTree, EmptyTree))
         val TypeDef(_, _, tparamtparams, _) = tparam
-        val ftss = tparamtparams.filter(_.name == typeNames.WILDCARD)
+        val ftss = tparamtparams.filter(_.name.toString.startsWith(typeNames.WILDCARD.toString))
         if(ftss.isEmpty)
           c.abort(c.enclosingPosition, "Cannot find a wildcard type in supposed n-arity type constructor")
         else {
