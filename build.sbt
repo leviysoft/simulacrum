@@ -28,11 +28,11 @@ ThisBuild / githubWorkflowBuild := Seq(
   )
 )
 
-ThisBuild / githubWorkflowTargetTags ++= Seq("*")
+ThisBuild / githubWorkflowTargetTags ++= Seq("v*")
 ThisBuild / githubWorkflowPublishTargetBranches :=
   Seq(
     RefPredicate.Equals(Ref.Branch("master")),
-    RefPredicate.StartsWith(Ref.Tag(""))
+    RefPredicate.StartsWith(Ref.Tag("v"))
   )
 
 ThisBuild / githubWorkflowPublish := Seq(
