@@ -1,13 +1,11 @@
-import sbtrelease._
 import com.typesafe.tools.mima.core._
 import sbtcrossproject.CrossPlugin.autoImport.crossProject
 import sbtcrossproject.CrossType
-import ReleaseTransformations._
 
 val Scala212 = "2.12.19"
-val NativeCond = s"matrix.scala == '$Scala212'"
+val Scala213 = "2.13.14"
 
-ThisBuild / crossScalaVersions := Seq("2.12.19", "2.13.14")
+ThisBuild / crossScalaVersions := Seq(Scala212, Scala213)
 ThisBuild / scalaVersion := Scala212
 
 ThisBuild / githubWorkflowPublishTargetBranches := Seq()
@@ -16,17 +14,36 @@ ThisBuild / githubWorkflowBuildPreamble +=
   WorkflowStep.Run(
     List("sudo apt install clang libunwind-dev libgc-dev libre2-dev"),
     name = Some("Setup scala native dependencies"),
-    cond = Some(NativeCond))
+ )
 
 ThisBuild / githubWorkflowBuild := Seq(
   WorkflowStep.Sbt(
     List("test", "test:doc", "mimaReportBinaryIssues"),
-    name = Some("Run main build")),
+    name = Some("Run main build")
+  ),
 
   WorkflowStep.Sbt(
     List("coreNative/test", "examplesNative/test"),
     name = Some("Run native build"),
-    cond = Some(NativeCond)))
+  )
+)
+
+ThisBuild / githubWorkflowTargetTags ++= Seq("v*")
+ThisBuild / githubWorkflowPublishTargetBranches :=
+  Seq(RefPredicate.StartsWith(Ref.Tag("v")))
+
+ThisBuild / githubWorkflowPublish := Seq(
+  WorkflowStep.Sbt(
+    List("ci-release"),
+    name = Some("Publish artifacts"),
+    env = Map(
+      "PGP_PASSPHRASE" -> "${{ secrets.PGP_PASSPHRASE }}",
+      "PGP_SECRET" -> "${{ secrets.PGP_SECRET }}",
+      "SONATYPE_PASSWORD" -> "${{ secrets.SONATYPE_PASSWORD }}",
+      "SONATYPE_USERNAME" -> "${{ secrets.SONATYPE_USERNAME }}"
+    )
+  )
+)
 
 ThisBuild / githubWorkflowJavaVersions := Seq(JavaSpec.temurin("11"))
 
@@ -34,12 +51,14 @@ val scalatestVersion = "3.2.19"
 
 lazy val nativeCommonSettings = Def.settings(
   scalaVersion := Scala212,
-  crossScalaVersions := Seq(Scala212),
+  crossScalaVersions := Seq(Scala212, Scala213),
   //nativeLinkStubs := true
 )
 
 lazy val commonSettings = Seq(
-  organization := "org.typelevel",
+  sonatypeCredentialHost := "s01.oss.sonatype.org",
+  sonatypeRepository := "https://s01.oss.sonatype.org/service/local",
+  organization := "io.github.leviysoft",
   scalacOptions ++= Seq(
     "-deprecation",
     "-feature",
@@ -73,56 +92,21 @@ lazy val commonSettings = Seq(
         Nil
     }
   },
-  licenses += ("Three-clause BSD-style", url("https://github.com/mpilquist/simulacrum/blob/master/LICENSE")),
-  publishTo := {
-    val nexus = "https://oss.sonatype.org/"
-    if (version.value.trim.endsWith("SNAPSHOT"))
-      Some("snapshots" at nexus + "content/repositories/snapshots")
-    else
-      Some("releases" at nexus + "service/local/staging/deploy/maven2")
-  },
-  publishMavenStyle := true,
-  Test / publishArtifact := false,
-  pomIncludeRepository := { x => false },
-  pomExtra := (
-    <url>http://github.com/mpilquist/simulacrum</url>
-    <scm>
-      <url>git@github.com:mpilquist/simulacrum.git</url>
-      <connection>scm:git:git@github.com:mpilquist/simulacrum.git</connection>
-    </scm>
-    <developers>
-      <developer>
-        <id>mpilquist</id>
-        <name>Michael Pilquist</name>
-        <url>http://github.com/mpilquist</url>
-      </developer>
-    </developers>
-  ),
-  pomPostProcess := { node =>
-    import scala.xml._
-    import scala.xml.transform._
-    def stripIf(f: Node => Boolean) = new RewriteRule {
-      override def transform(n: Node) =
-        if (f(n)) NodeSeq.Empty else n
-    }
-    val stripTestScope = stripIf { n => n.label == "dependency" && (n \ "scope").text == "test" }
-    new RuleTransformer(stripTestScope).transform(node)(0)
-  },
-  releaseCrossBuild := true,
-  releaseProcess := Seq[ReleaseStep](
-    checkSnapshotDependencies,
-    inquireVersions,
-    runClean,
-    runTest,
-    releaseStepCommandAndRemaining("test:doc"),
-    setReleaseVersion,
-    commitReleaseVersion,
-    tagRelease,
-    publishArtifacts,
-    releaseStepCommandAndRemaining(s";++${Scala212}!;coreNative/publish"),
-    setNextVersion,
-    commitNextVersion,
-    pushChanges
+  licenses += ("Three-clause BSD-style", url("https://github.com/leviysoft/simulacrum/blob/master/LICENSE")),
+  homepage := Some(url("https://github.com/leviysoft/simulacrum")),
+  developers := List(
+    Developer(
+      "mpilquist",
+      "Michael Pilquist",
+      "-",
+      url("http://github.com/mpilquist")
+    ),
+    Developer(
+      "danslapman",
+      "Daniil Smirnov",
+      "danslapman@gmail.com",
+      url("https://github.com/danslapman")
+    )
   ),
   Test / compile / wartremoverErrors ++= Seq(
     Wart.ExplicitImplicitTypes,
